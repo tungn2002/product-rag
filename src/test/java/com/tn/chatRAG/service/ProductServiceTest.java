@@ -4,7 +4,6 @@ import com.tn.chatRAG.dto.ProductRequest;
 import com.tn.chatRAG.dto.ProductResponse;
 import com.tn.chatRAG.entity.Product;
 import com.tn.chatRAG.repository.ProductRepository;
-import com.tn.chatRAG.service.impl.ProductServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,11 +23,14 @@ class ProductServiceTest {
     @Mock
     private ProductRepository productRepository;
 
+    @Mock
+    private ProductVectorService productVectorService;
+
     @InjectMocks
-    private ProductServiceImpl productService;
+    private ProductService productService;
 
     @Test
-    @DisplayName("Tạo sản phẩm thành công khi dữ liệu hợp lệ")
+    @DisplayName("Tạo sản phẩm thành công và kích hoạt async nạp vector")
     void createProduct_Success() {
         // Given
         ProductRequest request = ProductRequest.builder()
@@ -59,5 +61,6 @@ class ProductServiceTest {
         assertThat(response.getStockQuantity()).isEqualTo(request.getStockQuantity());
 
         verify(productRepository, times(1)).save(any(Product.class));
+        verify(productVectorService, times(1)).saveProductVector(1L);
     }
 }
